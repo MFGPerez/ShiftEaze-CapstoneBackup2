@@ -77,7 +77,7 @@ const Signup = () => {
         <div className="w-6/12 h-screen flex flex-col justify-center items-center">
           <h1 className="text-6xl text-white mb-6 font-rockSalt">ShiftEaze!</h1>
           <p className="text-white text-lg font-nixie mb-4 text-center">
-            Streamlining Workforce Management. Efficient scheduling and
+             Efficient scheduling and
             management for better productivity.
           </p>
         </div>
