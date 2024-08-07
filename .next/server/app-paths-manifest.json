@@ -1,3 +1,10 @@
 {
-  "/page": "app/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/calendar/page": "app/calendar/page.js",
+  "/aboutUs/page": "app/aboutUs/page.js",
+  "/punchInOut/page": "app/punchInOut/page.js",
+  "/requestLeave/page": "app/requestLeave/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/signin/page": "app/signin/page.js",
+  "/trackworkhistory/page": "app/trackworkhistory/page.js"
 }
