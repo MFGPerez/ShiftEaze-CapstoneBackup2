@@ -164,9 +164,9 @@ const AddWorker = () => {
               />
             </div>
             <div className="w-full md:w-1/2 px-4 mb-6">
-              <label className="block text-white font-comfortaa font-semibold">Passcode</label>
+              <label className="block text-white font-comfortaa font-semibold">Password</label>
               <input
-                type="text"
+                type="password"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 className="w-full px-4 py-3 mt-2 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 font-nixie"
@@ -232,7 +232,7 @@ const AddWorker = () => {
               />
             </div>
             <div className="w-full md:w-1/3 px-4 mb-6">
-              <label className="block text-white font-comfortaa font-semibold">State</label>
+              <label className="block text-white font-comfortaa font-semibold">Province</label>
               <input
                 type="text"
                 value={state}
