@@ -10,7 +10,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { AiOutlineDownload, AiOutlineUpload } from 'react-icons/ai';
 import * as XLSX from 'xlsx';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { firebaseApp } from 'utils/firebase';
 import { useSearchParams } from 'next/navigation';
 
@@ -42,6 +42,8 @@ const HorizontalCalendar = () => {
   useEffect(() => {
     if (selectedJobTitle) {
       loadBlocksForCurrentMonthAndJobTitle(selectedJobTitle);
+    } else {
+      setBlocks([]);
     }
   }, [currentDate, selectedJobTitle]);
 
@@ -185,6 +187,12 @@ const HorizontalCalendar = () => {
     }
   };
 
+  const saveBlocksToFirebase = async (blocks) => {
+    for (const block of blocks) {
+      await saveBlockToFirebase(block);
+    }
+  };
+
   const loadBlocksForCurrentMonthAndJobTitle = async (jobTitle) => {
     const user = auth.currentUser;
     if (!user) return;
@@ -217,6 +225,7 @@ const HorizontalCalendar = () => {
 
     const data = blocks.map(block => {
       return {
+        JobTitle: block.jobTitle,
         DisplayRow: block.row + 1,
         ProfilePicture: block.employee.photoURL ? block.employee.photoURL : 'None',
         FirstName: block.employee.firstName,
@@ -243,7 +252,7 @@ const HorizontalCalendar = () => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const data = new Uint8Array(event.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
       const sheetName = workbook.SheetNames[0];
@@ -258,7 +267,7 @@ const HorizontalCalendar = () => {
 
       if (validateImportedData(jsonData)) {
         const importedBlocks = jsonData.map(item => ({
-          id: `${Date.now()}-${item.GridRow}`,
+          id: `${Date.now()}-${Math.random()}`,
           type: item.BlockType,
           startDate: parse(item.StartDate, 'MMMM d, yyyy', new Date()),
           endDate: parse(item.EndDate, 'MMMM d, yyyy', new Date()),
@@ -269,18 +278,16 @@ const HorizontalCalendar = () => {
             lastName: item.LastName,
             photoURL: item.ProfilePicture !== 'None' ? item.ProfilePicture : null
           },
-          row: item.GridRow - 1
+          row: item.GridRow - 1,
+          jobTitle: selectedJobTitle,
         }));
 
-        const uniqueBlocks = importedBlocks.map(block => ({
-          ...block,
-          id: `${block.id}-${Math.random()}`
-        }));
+        for (const block of importedBlocks) {
+          await saveBlockToFirebase(block);
+        }
 
         setBlocks((prevBlocks) => {
-          const updatedBlocks = [...prevBlocks, ...uniqueBlocks];
-          saveBlocksToFirebase(updatedBlocks);
-          return updatedBlocks;
+          return [...prevBlocks, ...importedBlocks];
         });
       } else {
         alert('Invalid file format. Please upload a valid schedule spreadsheet.');

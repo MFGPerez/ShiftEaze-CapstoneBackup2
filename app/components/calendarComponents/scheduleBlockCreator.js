@@ -306,7 +306,7 @@ const ScheduleBlockCreator = ({
               <button onClick={handleDoneClick} className="flex font-comfortaa font-semibold items-center space-x-2 bg-green-600 px-2 py-1 rounded-lg hover:bg-green-700 ml-2 border-2 border-transparent hover:border-green-500" disabled={mode === 'worker'}>
                 Done
               </button>
-              <button onClick={resetForm} className="font-comfortaa font-semibold text-red-600 hover:text-red-400 ml-8">
+              <button onClick={resetForm} className="font-comfortaa font-semibold text-red-600 hover:text-red-400 ml-7">
                 <AiOutlineClose size={24} />
               </button>
             </div>

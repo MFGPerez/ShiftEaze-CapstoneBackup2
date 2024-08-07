@@ -316,18 +316,6 @@ const PunchInOutComponent = () => {
                 <p>Paid Hours: {formatTime(elapsedTime - breakTime)}</p>
               </div>
               <div className="text-center mt-6">
-                <Link
-                  href={`/workerHours?managerId=${managerId}&firstName=${firstName}&lastName=${lastName}`}
-                  className="bg-green-500 text-white px-4 py-2 rounded-md inline-block mr-2 shadow-md hover:bg-green-600 border-2 border-transparent hover:border-green-300 font-comfortaa font-semibold"
-                >
-                  View Worked Hours
-                </Link>
-                <Link
-                  href="/signin"
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md inline-block shadow-md hover:bg-gray-600 border-2 border-transparent hover:border-gray-400"
-                >
-                  Logout
-                </Link>
               </div>
             </div>
           </>
