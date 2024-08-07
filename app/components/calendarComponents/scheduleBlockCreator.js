@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { parseISO, format, startOfMonth, endOfMonth } from 'date-fns';
 import { AiOutlineClose } from 'react-icons/ai';
-import { getFirestore, collection, getDocs, doc, addDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, addDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { firebaseApp } from 'utils/firebase';
 import { useWorkers } from './workersContext';
@@ -159,9 +159,36 @@ const ScheduleBlockCreator = ({
     }
   };
 
+  const deleteBlocksFromFirebase = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    let managerRef;
+    if (mode === 'worker' && managerId) {
+      managerRef = doc(db, 'managers', managerId);
+    } else if (mode === 'admin') {
+      managerRef = doc(db, 'managers', user.uid);
+    } else {
+      console.error("Manager ID not found.");
+      return;
+    }
+
+    const scheduleCollectionRef = collection(managerRef, 'schedule');
+    const q = query(scheduleCollectionRef, where('jobTitle', '==', selectedJobTitle));
+
+    try {
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+    } catch (error) {
+      console.error("Error deleting blocks from Firebase: ", error);
+    }
+  };
+
   const handleDeleteAll = () => {
     setBlocks([]);
-    saveBlocksToFirebase([]);
+    deleteBlocksFromFirebase();
   };
 
   const isValidName = (name) => /^[a-zA-Z\s]+$/.test(name);
