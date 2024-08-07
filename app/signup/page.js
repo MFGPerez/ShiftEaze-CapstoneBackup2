@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NavBar from "@/components/navBarLogin";
 import Footer from "@/components/footer";
+import DOMPurify from 'dompurify';
 
 // Initialize Firestore
 const db = getFirestore(firebaseApp);
@@ -37,10 +38,14 @@ const Signup = () => {
     e.preventDefault();
     const auth = getAuth(firebaseApp);
     try {
+      // Sanitize inputs
+      const sanitizedEmail = DOMPurify.sanitize(email);
+      const sanitizedPassword = DOMPurify.sanitize(password);
+
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        email,
-        password
+        sanitizedEmail,
+        sanitizedPassword
       );
       const user = userCredential.user;
       await sendEmailVerification(user);
@@ -75,10 +80,9 @@ const Signup = () => {
       <NavBar />
       <main className="flex min-h-screen bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 items-center justify-between">
         <div className="w-6/12 h-screen flex flex-col justify-center items-center">
-          <h1 className="text-6xl text-white mb-6 font-rockSalt">ShiftEaze!</h1>
+          <h1 className="text-6xl text-white mb-6 font-rockSalt">ShiftEaze</h1>
           <p className="text-white text-lg font-nixie mb-4 text-center">
-             Efficient scheduling and
-            management for better productivity.
+            Efficient scheduling and management for better productivity.
           </p>
         </div>
         <div className="w-6/12 h-screen flex flex-col justify-center items-center bg-white bg-opacity-20 p-8 rounded-lg shadow-lg">
@@ -92,7 +96,7 @@ const Signup = () => {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(DOMPurify.sanitize(e.target.value))}
                 className={`w-full px-4 py-2 rounded-md text-black focus:outline-none font-nixie ${
                   error ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700" : ""
                 }`}
@@ -106,7 +110,7 @@ const Signup = () => {
                 <input
                   type={passwordVisible ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(DOMPurify.sanitize(e.target.value))}
                   className={`w-full px-4 py-2 rounded-md text-black focus:outline-none font-nixie ${
                     error ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700" : ""
                   }`}
@@ -122,9 +126,10 @@ const Signup = () => {
               </div>
             </div>
             {error && (
-              <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                <span className="font-medium">{error}</span>
-              </p>
+              <p
+                className="mt-2 text-sm text-red-600 dark:text-red-500"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(error) }}
+              ></p>
             )}
             <button
               type="submit"
@@ -134,7 +139,10 @@ const Signup = () => {
             </button>
           </form>
           {confirmationMessage && (
-            <p className="text-green-500 mb-4">{confirmationMessage}</p>
+            <p
+              className="text-green-500 mb-4"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(confirmationMessage) }}
+            ></p>
           )}
           <p className="mt-4 text-white text-sm text-center">
             Already have an account?{" "}
